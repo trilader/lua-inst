@@ -108,12 +108,10 @@ local function parse_iso8601 (date_str)
     error(("invalid date '%s': date string doesn't match ISO8601 pattern"):format(date_str), 2)
   end
 
-  if is_leap_year(tonumber(year)) and tonumber(mon) == 2 and tonumber(day) == 29 then
-    error(("invalid date '%s': wrong leap year date"):format(date_str), 2)
-  end
-
-  if mon and tonumber(mon) == 2 and day and tonumber(day) > 28 then
-    error(("invalid date '%s': February has 28 days"):format(date_str), 2)
+  if is_leap_year(tonumber(year)) and mon and tonumber(mon) == 2 and day and tonumber(day) > 29 then
+    error(("invalid date '%s': February has 29 days in leap years"):format(date_str), 2)
+  elseif not is_leap_year(tonumber(year)) and mon and tonumber(mon) == 2 and day and tonumber(day) > 28 then
+    error(("invalid date '%s': February has 28 days in non leap years"):format(date_str), 2)
   end
 
   if mon and day and tonumber(day) == 31 and not months_w_thirty_one_days[tonumber(mon)] then
@@ -167,11 +165,13 @@ if nil then
   test("20210221T23:59:42+03:00",       {year=2021, month=2, day=21, hour=20, min=59, sec=42})
   test("2021-02-21T23:59:42.999+03:00", {year=2021, month=2, day=21, hour=20, min=59, sec=42})
   test("20210221T23:59:42.999+03:00",   {year=2021, month=2, day=21, hour=20, min=59, sec=42})
+  test("20240229T23:59:42.999+00:00",   {year=2024, month=2, day=29, hour=23, min=59, sec=42})
 
   assert(not pcall(inst, "20041330"))
   assert(not pcall(inst, "2004-02-30T23:59:42Z"))
   assert(not pcall(inst, "2004-02-31T23:59:42Z"))
   assert(not pcall(inst, "2004-04-31T23:59:42Z"))
+  assert(not pcall(inst, "2023-02-29T23:59:42Z"))
 end
 
 return inst
