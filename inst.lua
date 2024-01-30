@@ -116,7 +116,7 @@ local function parse_iso8601 (date_str)
     error(("invalid date '%s': February has 28 days"):format(date_str), 2)
   end
 
-  if mon and day and tonumber(day) == 31 and not months_w_thirty_one_days[mon] then
+  if mon and day and tonumber(day) == 31 and not months_w_thirty_one_days[tonumber(mon)] then
     error(("invalid date '%s': month %d has 30 days"):format(date_str, mon), 2)
   end
 
